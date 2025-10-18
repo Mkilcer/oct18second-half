@@ -50,6 +50,22 @@ class TestCalculateAverageTemp(unittest.TestCase):
         
         self.assertEqual(averages['Monday'], 71.25)
     
+    def test_calculate_with_empty_rows(self):
+        """Test that empty rows are properly skipped."""
+        with open(self.test_csv, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['Day', 'Temperature'])
+            writer.writerow(['Monday', '70'])
+            writer.writerow(['Monday', '80'])
+            writer.writerow(['', ''])  # Empty row
+            writer.writerow(['Tuesday', '60'])
+        
+        averages = calculate_daily_average(self.test_csv)
+        
+        self.assertEqual(averages['Monday'], 75.0)
+        self.assertEqual(averages['Tuesday'], 60.0)
+        self.assertEqual(len(averages), 2)
+    
     def test_actual_data_file(self):
         """Test with the actual temperature_data.csv file."""
         if os.path.exists('temperature_data.csv'):

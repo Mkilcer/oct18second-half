@@ -24,6 +24,9 @@ def calculate_daily_average(csv_file):
     with open(csv_file, 'r') as file:
         reader = csv.DictReader(file)
         for row in reader:
+            # Skip empty rows
+            if not row.get('Day') or not row.get('Temperature'):
+                continue
             day = row['Day']
             temperature = float(row['Temperature'])
             day_temperatures[day].append(temperature)
