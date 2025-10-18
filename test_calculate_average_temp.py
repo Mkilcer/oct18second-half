@@ -66,6 +66,23 @@ class TestCalculateAverageTemp(unittest.TestCase):
         self.assertEqual(averages['Tuesday'], 60.0)
         self.assertEqual(len(averages), 2)
     
+    def test_calculate_with_whitespace_and_invalid_data(self):
+        """Test that whitespace-only and invalid data are properly skipped."""
+        with open(self.test_csv, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['Day', 'Temperature'])
+            writer.writerow(['Monday', '70'])
+            writer.writerow(['  ', '80'])  # Whitespace-only day
+            writer.writerow(['Tuesday', '  '])  # Whitespace-only temperature
+            writer.writerow(['Wednesday', 'abc'])  # Invalid temperature
+            writer.writerow(['Thursday', '65'])
+        
+        averages = calculate_daily_average(self.test_csv)
+        
+        self.assertEqual(averages['Monday'], 70.0)
+        self.assertEqual(averages['Thursday'], 65.0)
+        self.assertEqual(len(averages), 2)
+    
     def test_actual_data_file(self):
         """Test with the actual temperature_data.csv file."""
         if os.path.exists('temperature_data.csv'):
